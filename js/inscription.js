@@ -7,7 +7,7 @@ form.addEventListener("submit", async (event) => {
     const data = Object.fromEntries(formData.entries());
     
     try {
-        const token = "VOTRE_TOKEN_PERSONNEL"; // Remplacez par votre token GitHub
+        const token = "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"; // Remplacez par votre token GitHub
         const repoOwner = "Nouredine227";
         const repoName = "Cloud-Json";
         const filePath = "school/candidats.json";
