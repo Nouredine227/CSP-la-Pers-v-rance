@@ -1,38 +1,37 @@
 const token = "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"; // Remplacez par votre token GitHub
 const apiUrl = "https://api.github.com/repos/nouredine227/cloud/contents/school/candidats.json";
 
-// Fonction pour récupérer le contenu actuel du fichier JSON
+// Fonction pour récupérer le fichier JSON depuis GitHub
 async function getCurrentFile() {
     try {
         const response = await fetch(apiUrl, {
             headers: {
                 Authorization: `Bearer ${token}`,
-                Accept: "application/vnd.github.v3+json", // Assurez-vous que l'API envoie les métadonnées appropriées
+                Accept: "application/vnd.github.v3+json",
             },
         });
 
         if (!response.ok) {
-            const errorDetails = await response.text();
-            throw new Error(`Erreur lors de la récupération : ${response.status} - ${errorDetails}`);
+            throw new Error(`Erreur lors de la récupération : ${response.status}`);
         }
 
         const fileData = await response.json();
 
-        // Décoder le contenu Base64 pour obtenir le fichier JSON
+        // Décoder le contenu Base64
         const decodedContent = atob(fileData.content);
 
         return {
-            content: JSON.parse(decodedContent), // Convertir le JSON en objet JavaScript
-            sha: fileData.sha, // SHA nécessaire pour la mise à jour
+            content: JSON.parse(decodedContent), // Convertir le JSON en objet
+            sha: fileData.sha, // SHA pour la mise à jour
         };
     } catch (error) {
         console.error("Erreur lors de la récupération du fichier :", error);
-        alert("Impossible de charger le fichier actuel. Vérifiez les logs pour plus de détails.");
+        alert("Impossible de charger le fichier actuel. Vérifiez les logs.");
         return null;
     }
 }
 
-// Fonction pour mettre à jour le fichier JSON avec un nouveau candidat
+// Fonction pour mettre à jour le fichier JSON sur GitHub
 async function updateFile(newData) {
     try {
         const fileData = await getCurrentFile();
@@ -67,19 +66,18 @@ async function updateFile(newData) {
             body: JSON.stringify({
                 message: "Ajout d'un nouveau candidat",
                 content: encodedContent,
-                sha: sha, // Nécessaire pour indiquer que vous mettez à jour une version existante
+                sha: sha, // SHA nécessaire pour indiquer que le fichier existant est modifié
             }),
         });
 
         if (!response.ok) {
-            const errorDetails = await response.text();
-            throw new Error(`Erreur lors de la mise à jour : ${response.status} - ${errorDetails}`);
+            throw new Error(`Erreur lors de la mise à jour : ${response.status}`);
         }
 
         alert("Inscription réussie !");
     } catch (error) {
         console.error("Erreur lors de la mise à jour du fichier :", error);
-        alert("Une erreur est survenue lors de l'inscription. Vérifiez les logs pour plus de détails.");
+        alert("Une erreur est survenue lors de l'inscription. Vérifiez les logs.");
     }
 }
 
