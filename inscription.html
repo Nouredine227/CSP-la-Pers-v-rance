@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inscription en Ligne</title>
+    <link rel="stylesheet" href="styles/inscription.css">
+</head>
+<body>
+    <header>
+        <h1>Portail d'Inscription Futuriste</h1>
+    </header>
+    <main>
+        <form id="inscriptionForm">
+            <label for="nom">Nom :</label>
+            <input type="text" id="nom" name="nom" required>
+            
+            <label for="prenom">Prénom :</label>
+            <input type="text" id="prenom" name="prenom" required>
+            
+            <label for="dateNaissance">Date de naissance :</label>
+            <input type="date" id="dateNaissance" name="dateNaissance" required>
+            
+            <label for="lieuNaissance">Lieu de naissance :</label>
+            <input type="text" id="lieuNaissance" name="lieuNaissance" required>
+            
+            <label for="sexe">Sexe :</label>
+            <select id="sexe" name="sexe" required>
+                <option value="Masculin">Masculin</option>
+                <option value="Féminin">Féminin</option>
+            </select>
+            
+            <label for="email">Adresse email :</label>
+            <input type="email" id="email" name="email" required>
+            
+            <label for="adresse">Adresse physique :</label>
+            <input type="text" id="adresse" name="adresse" required>
+            
+            <label for="numCandidat">Numéro du candidat :</label>
+            <input type="text" id="numCandidat" name="numCandidat" required>
+            
+            <label for="numParent">Numéro du parent :</label>
+            <input type="text" id="numParent" name="numParent" required>
+            
+            <label for="classe">Classe :</label>
+            <input type="text" id="classe" name="classe" required>
+            
+            <label for="anneeScolaire">Année scolaire :</label>
+            <input type="text" id="anneeScolaire" name="anneeScolaire" required>
+            
+            <button type="submit">Soumettre</button>
+        </form>
+        <div id="message"></div>
+    </main>
+</body>
+<script src="js/inscription.js"></script>
+  </html>
