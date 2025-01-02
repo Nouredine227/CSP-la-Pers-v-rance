@@ -7,19 +7,24 @@ async function getCurrentFile() {
         const response = await fetch(apiUrl, {
             headers: {
                 Authorization: `Bearer ${token}`,
-                "Accept": "application/vnd.github.v3+json",
-            }
+                Accept: "application/vnd.github.v3+json", // Assurez-vous que l'API envoie les métadonnées appropriées
+            },
         });
 
-        // Afficher les détails de la réponse si elle échoue
         if (!response.ok) {
             const errorDetails = await response.text();
             throw new Error(`Erreur lors de la récupération : ${response.status} - ${errorDetails}`);
         }
 
         const fileData = await response.json();
-        const content = JSON.parse(atob(fileData.content)); // Décoder le contenu Base64
-        return { content, sha: fileData.sha }; // Retourne le contenu et le SHA
+
+        // Décoder le contenu Base64 pour obtenir le fichier JSON
+        const decodedContent = atob(fileData.content);
+
+        return {
+            content: JSON.parse(decodedContent), // Convertir le JSON en objet JavaScript
+            sha: fileData.sha, // SHA nécessaire pour la mise à jour
+        };
     } catch (error) {
         console.error("Erreur lors de la récupération du fichier :", error);
         alert("Impossible de charger le fichier actuel. Vérifiez les logs pour plus de détails.");
@@ -49,6 +54,10 @@ async function updateFile(newData) {
         // Ajouter le nouveau candidat au contenu
         content.push(newData);
 
+        // Encoder le contenu mis à jour en Base64
+        const encodedContent = btoa(JSON.stringify(content, null, 2));
+
+        // Requête PUT pour mettre à jour le fichier sur GitHub
         const response = await fetch(apiUrl, {
             method: "PUT",
             headers: {
@@ -57,9 +66,9 @@ async function updateFile(newData) {
             },
             body: JSON.stringify({
                 message: "Ajout d'un nouveau candidat",
-                content: btoa(JSON.stringify(content, null, 2)), // Encoder en Base64
-                sha: sha,
-            })
+                content: encodedContent,
+                sha: sha, // Nécessaire pour indiquer que vous mettez à jour une version existante
+            }),
         });
 
         if (!response.ok) {
@@ -106,7 +115,7 @@ function handleSubmit(event) {
         numCandidat,
         numParent,
         classe,
-        anneeScolaire
+        anneeScolaire,
     };
 
     console.log("Nouveau candidat :", newCandidate);
