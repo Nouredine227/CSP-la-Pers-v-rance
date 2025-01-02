@@ -1,6 +1,6 @@
 // Informations nécessaires
 const username = "nouredine227";
-const repoName = "cloud-json";
+const repoName = "cloud";
 const filePath = "school/candidats.json";
 const token = "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"; // Remplacez par votre token GitHub
 
@@ -37,7 +37,7 @@ async function submitForm(event) {
 
     try {
         // Récupération du contenu actuel du fichier
-        const response = await fetch(`https://api.github.com/repos/nouredine227/cloud-json/contents/school/candidats.json}`, {
+        const response = await fetch(`https://api.github.com/repos/nouredine227/cloud/contents/school/candidats.json}`, {
             headers: {
                 Authorization: `Bearer ${token}`
             }
@@ -54,7 +54,7 @@ async function submitForm(event) {
         content.push(newCandidate);
 
         // Mise à jour du fichier JSON sur GitHub
-        const updateResponse = await fetch(`https://api.github.com/repos/nouredine227/cloud-json/contents/school/candidats.json}`, {
+        const updateResponse = await fetch(`https://api.github.com/repos/nouredine227/cloud/contents/school/candidats.json}`, {
             method: "PUT",
             headers: {
                 Authorization: `Bearer ${token}`,
