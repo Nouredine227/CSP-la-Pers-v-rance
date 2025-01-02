@@ -1,4 +1,4 @@
-const token = "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"; // Remplacez par votre token GitHub
+const token = "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"; // Remplacez par votre token GitHub
 const apiUrl = "https://api.github.com/repos/nouredine227/cloud/contents/school/candidats.json";
 
 // Fonction pour récupérer le contenu actuel du fichier JSON
