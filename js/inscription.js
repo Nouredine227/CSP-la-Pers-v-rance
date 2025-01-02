@@ -6,17 +6,23 @@ async function getCurrentFile() {
     try {
         const response = await fetch(apiUrl, {
             headers: {
-                Authorization: `Bearer ${token}`
+                Authorization: `Bearer ${token}`,
+                "Accept": "application/vnd.github.v3+json",
             }
         });
+
+        // Afficher les détails de la réponse si elle échoue
         if (!response.ok) {
-            throw new Error(`Erreur lors de la récupération : ${response.status}`);
+            const errorDetails = await response.text();
+            throw new Error(`Erreur lors de la récupération : ${response.status} - ${errorDetails}`);
         }
+
         const fileData = await response.json();
         const content = JSON.parse(atob(fileData.content)); // Décoder le contenu Base64
         return { content, sha: fileData.sha }; // Retourne le contenu et le SHA
     } catch (error) {
         console.error("Erreur lors de la récupération du fichier :", error);
+        alert("Impossible de charger le fichier actuel. Vérifiez les logs pour plus de détails.");
         return null;
     }
 }
@@ -24,16 +30,12 @@ async function getCurrentFile() {
 // Fonction pour mettre à jour le fichier JSON avec un nouveau candidat
 async function updateFile(newData) {
     try {
-        // Étape 1 : Récupérer le fichier actuel et son SHA
         const fileData = await getCurrentFile();
-        if (!fileData) {
-            alert("Erreur : impossible de récupérer les données actuelles.");
-            return;
-        }
+        if (!fileData) return;
 
         const { content, sha } = fileData;
 
-        // Vérifier si le candidat existe déjà (par email ou numéro de candidat)
+        // Vérifier si le candidat existe déjà
         const existingCandidate = content.find(
             candidate =>
                 candidate.email === newData.email ||
@@ -44,40 +46,38 @@ async function updateFile(newData) {
             return;
         }
 
-        // Ajouter le nouveau candidat au contenu existant
+        // Ajouter le nouveau candidat au contenu
         content.push(newData);
 
-        // Étape 2 : Envoyer la mise à jour
         const response = await fetch(apiUrl, {
             method: "PUT",
             headers: {
                 Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
             },
             body: JSON.stringify({
                 message: "Ajout d'un nouveau candidat",
                 content: btoa(JSON.stringify(content, null, 2)), // Encoder en Base64
-                sha: sha // SHA actuel du fichier
+                sha: sha,
             })
         });
 
         if (!response.ok) {
-            throw new Error(`Erreur lors de la mise à jour : ${response.status}`);
+            const errorDetails = await response.text();
+            throw new Error(`Erreur lors de la mise à jour : ${response.status} - ${errorDetails}`);
         }
 
         alert("Inscription réussie !");
     } catch (error) {
         console.error("Erreur lors de la mise à jour du fichier :", error);
-        alert("Une erreur est survenue lors de l'inscription. Veuillez réessayer.");
+        alert("Une erreur est survenue lors de l'inscription. Vérifiez les logs pour plus de détails.");
     }
 }
 
-// Fonction pour gérer l'inscription depuis le formulaire
+// Fonction pour gérer l'inscription
 function handleSubmit(event) {
-    event.preventDefault(); // Empêche le rechargement de la page
-    console.log("Formulaire soumis, traitement en cours...");
+    event.preventDefault();
 
-    // Récupérer les données du formulaire
     const nom = document.getElementById("nom").value.trim();
     const prenom = document.getElementById("prenom").value.trim();
     const dateNaissance = document.getElementById("dateNaissance").value.trim();
@@ -90,25 +90,11 @@ function handleSubmit(event) {
     const classe = document.getElementById("classe").value.trim();
     const anneeScolaire = document.getElementById("anneeScolaire").value.trim();
 
-    // Validation des champs obligatoires
-    if (
-        !nom ||
-        !prenom ||
-        !dateNaissance ||
-        !lieuNaissance ||
-        !sexe ||
-        !email ||
-        !adresse ||
-        !numCandidat ||
-        !numParent ||
-        !classe ||
-        !anneeScolaire
-    ) {
+    if (!nom || !prenom || !dateNaissance || !lieuNaissance || !sexe || !email || !adresse || !numCandidat || !numParent || !classe || !anneeScolaire) {
         alert("Veuillez remplir tous les champs !");
         return;
     }
 
-    // Création du nouvel objet candidat
     const newCandidate = {
         nom,
         prenom,
@@ -125,16 +111,13 @@ function handleSubmit(event) {
 
     console.log("Nouveau candidat :", newCandidate);
 
-    // Appeler la fonction pour mettre à jour le fichier JSON
     updateFile(newCandidate);
 }
 
-// Ajouter un écouteur d'événement au formulaire
 document.addEventListener("DOMContentLoaded", () => {
     const form = document.getElementById("inscriptionForm");
     if (form) {
         form.addEventListener("submit", handleSubmit);
-        console.log("Écouteur ajouté au formulaire.");
     } else {
         console.error("Formulaire non trouvé !");
     }
